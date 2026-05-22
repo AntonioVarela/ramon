@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parts of the Face and Mouth</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #f7fbff, #eef4ff);
+      color: #24324a;
+    }
+
+    header {
+      text-align: center;
+      padding: 32px 20px 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2.4rem;
+      color: #1f3b73;
+    }
+
+    header p {
+      font-size: 1.1rem;
+      color: #4d5f7d;
+    }
+
+    .container {
+      width: min(1200px, 94%);
+      margin: 0 auto 40px;
+    }
+
+    .activity {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 14px 35px rgba(31, 59, 115, 0.12);
+    }
+
+    .activity h2 {
+      margin-top: 0;
+      color: #274b8f;
+      text-align: center;
+      font-size: 1.8rem;
+    }
+
+    .activity-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .image-area {
+      position: relative;
+      min-height: 520px;
+      border: 3px dashed #b9caea;
+      border-radius: 22px;
+      background: #fbfdff;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .face-svg,
+    .mouth-svg {
+      width: 100%;
+      max-width: 520px;
+      height: auto;
+    }
+
+    .part-arrows line {
+      stroke: #e65100;
+      stroke-width: 2.5;
+      fill: none;
+      opacity: 1;
+    }
+
+    .drop-zone {
+      min-width: 100px;
+      min-height: 32px;
+      padding: 6px 8px;
+      border: 2px dashed #9eb8e8;
+      border-radius: 10px;
+      background: #fff;
+      color: #98a5b9;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+      flex-shrink: 0;
+    }
+
+    /* Cara: un solo tablero — casillas y flechas comparten coordenadas */
+    .face-workspace {
+      position: relative;
+      width: min(100%, 540px);
+      margin: 0 auto;
+      aspect-ratio: 600 / 540;
+    }
+
+    .face-workspace .face-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #f5f0fa;
+      border-radius: 16px;
+    }
+
+    .face-workspace .drop-zone {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      min-width: 86px;
+      min-height: 28px;
+      padding: 4px 6px;
+      font-size: 0.68rem;
+    }
+
+    /* Posición casilla = inicio flecha (viewBox 600×540) */
+    #faceActivity [data-zone="hair"] { left: 50%; top: 5.2%; }
+    #faceActivity [data-zone="eyelashes"] { left: 8.7%; top: 33%; }
+    #faceActivity [data-zone="ears"] { left: 8.7%; top: 46%; }
+    #faceActivity [data-zone="mouth"] { left: 8.7%; top: 66%; }
+    #faceActivity [data-zone="lips"] { left: 8.7%; top: 76%; }
+    #faceActivity [data-zone="eyebrows"] { left: 91.3%; top: 21.9%; }
+    #faceActivity [data-zone="eyes"] { left: 91.3%; top: 39.6%; }
+    #faceActivity [data-zone="nose"] { left: 91.3%; top: 51%; }
+    #faceActivity [data-zone="cheeks"] { left: 91.3%; top: 59.6%; }
+    #faceActivity [data-zone="chin"] { left: 50%; top: 94.8%; }
+
+    /* Boca: tablero simple */
+    .diagram-board {
+      position: relative;
+      width: min(100%, 460px);
+      margin: 0 auto;
+      aspect-ratio: 1 / 1;
+    }
+
+    .diagram-board svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .diagram-board .drop-zone {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      min-width: 88px;
+      min-height: 28px;
+      padding: 4px 6px;
+      font-size: 0.7rem;
+    }
+
+    #faceActivity .image-area,
+    #mouthActivity .image-area {
+      display: block;
+      padding: 20px 16px;
+      min-height: auto;
+      overflow: visible;
+    }
+
+    .drop-zone::before {
+      content: "Drop here";
+      font-size: 0.8rem;
+    }
+
+    .drop-zone.correct {
+      border-color: #3ca66b;
+      background: #eaf8f0;
+      color: #1d7c4a;
+    }
+
+    .drop-zone.correct::before {
+      content: "";
+    }
+
+    .drop-zone.wrong {
+      border-color: #dc5b5b;
+      background: #fff0f0;
+    }
+
+    .word-bank {
+      background: #f4f7ff;
+      border-radius: 20px;
+      padding: 18px;
+    }
+
+    .word-bank h3 {
+      margin-top: 0;
+      text-align: center;
+      color: #274b8f;
+    }
+
+    .words {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .word {
+      background: #274b8f;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 999px;
+      cursor: grab;
+      font-weight: bold;
+      box-shadow: 0 7px 14px rgba(39, 75, 143, 0.22);
+      user-select: none;
+    }
+
+    .word:active {
+      cursor: grabbing;
+      transform: scale(0.96);
+    }
+
+    .word.used {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: #ffb703;
+      color: #24324a;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(255, 183, 3, 0.3);
+    }
+
+    button:hover {
+      filter: brightness(0.97);
+    }
+
+    .score {
+      text-align: center;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #274b8f;
+      margin-top: 12px;
+    }
+
+    #faceActivity .image-area {
+      background: #ebe6f2;
+    }
+
+    #faceActivity .drop-zone::before {
+      content: "Suelta aquí";
+      font-size: 0.62rem;
+      color: #a8b8d4;
+      font-weight: 500;
+    }
+
+    #faceActivity .drop-zone.correct::before {
+      content: "";
+    }
+
+    #faceActivity .drop-zone.correct {
+      border-style: solid;
+      font-size: 0.72rem;
+    }
+
+    .mouth-workspace {
+      position: relative;
+      width: min(100%, 540px);
+      margin: 0 auto;
+      aspect-ratio: 600 / 540;
+    }
+
+    .mouth-stage {
+      position: absolute;
+      inset: 12% 8% 10% 8%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .mouth-css {
+      width: 100%;
+      max-width: 400px;
+      height: 100%;
+      max-height: 340px;
+      position: relative;
+    }
+
+    .mouth-arrows-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* Paladar (detrás; asoma un poco por encima de la encía) */
+    .palate-part {
+      width: 72%;
+      height: 72px;
+      background: #ff8a86;
+      border: 8px solid #233f67;
+      border-radius: 50% 50% 18px 18px;
+      position: absolute;
+      top: 0;
+      left: 14%;
+      z-index: 2;
+    }
+
+    /* Encía superior (delante del paladar) */
+    .mouth-css .gum-top {
+      width: 84%;
+      height: 90px;
+      background: #ff5a55;
+      border: 10px solid #233f67;
+      border-bottom: none;
+      border-radius: 55% 55% 12px 12px;
+      position: absolute;
+      top: 36px;
+      left: 8%;
+      overflow: visible;
+      z-index: 4;
+    }
+
+    .mouth-css .gum-top::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 40px;
+      background: #ff7771;
+      bottom: -22px;
+      border-radius: 50%;
+      opacity: 0.7;
+    }
+
+    .mouth-css .gum-bottom {
+      width: 84%;
+      height: 90px;
+      background: #ff5a55;
+      border: 10px solid #233f67;
+      border-top: none;
+      border-radius: 12px 12px 55% 55%;
+      position: absolute;
+      bottom: 0;
+      left: 8%;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .mouth-css .gum-bottom::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 40px;
+      background: #ff7771;
+      top: -22px;
+      border-radius: 50%;
+      opacity: 0.7;
+    }
+
+    .mouth-css .teeth-row {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 3px;
+      width: 78%;
+      left: 11%;
+      z-index: 5;
+    }
+
+    .mouth-css .top-teeth { top: 72px; }
+    .mouth-css .bottom-teeth { bottom: 68px; align-items: flex-start; }
+
+    .mouth-css .tooth {
+      background: #fff;
+      border: 8px solid #233f67;
+      border-radius: 22px 22px 16px 16px;
+      position: relative;
+      box-sizing: border-box;
+      box-shadow: inset -10px 0 0 #d9d9d9;
+      flex-shrink: 0;
+    }
+
+    .mouth-css .tooth::before {
+      content: "";
+      position: absolute;
+      width: 14px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      top: 8px;
+      left: 5px;
+    }
+
+    /* Molares: último diente de cada lado, más grueso */
+    .mouth-css .tooth.molar {
+      width: 52px;
+      height: 70px;
+      border-width: 9px;
+      margin-bottom: 6px;
+    }
+
+    .mouth-css .teeth-row .tooth.molar:first-child {
+      margin-right: 4px;
+    }
+
+    .mouth-css .teeth-row .tooth.molar:last-child {
+      margin-left: 4px;
+    }
+
+    /* Caninos: más estrechos */
+    .mouth-css .tooth.canine {
+      width: 40px;
+      height: 72px;
+      margin-bottom: 4px;
+      border-radius: 45% 45% 16px 16px;
+    }
+
+    /* Incisivos: grandes al centro */
+    .mouth-css .tooth.incisor {
+      width: 48px;
+      height: 80px;
+    }
+
+    .mouth-css .tooth.incisor.big {
+      width: 54px;
+      height: 86px;
+    }
+
+    .mouth-css .bottom-teeth .tooth {
+      border-radius: 16px 16px 22px 22px;
+    }
+
+    .mouth-css .bottom-teeth .tooth.molar {
+      margin-bottom: 0;
+      margin-top: 6px;
+      height: 66px;
+    }
+    .mouth-css .bottom-teeth .tooth.canine { margin-top: 4px; }
+    .mouth-css .bottom-teeth .tooth.incisor { margin-top: 0; }
+    .mouth-css .bottom-teeth .tooth.incisor.big { margin-top: 6px; }
+
+    /* Lengua (reemplaza el hueco oscuro del ejemplo) */
+    .tongue-part {
+      position: absolute;
+      width: 62%;
+      height: 72px;
+      background: linear-gradient(180deg, #ef5350, #c62828);
+      border: 10px solid #233f67;
+      border-radius: 50% 50% 45% 45%;
+      top: 50%;
+      left: 19%;
+      transform: translateY(-50%);
+      z-index: 3;
+    }
+
+    .tongue-part::after {
+      content: "";
+      position: absolute;
+      width: 4px;
+      height: 42px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 4px;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .mouth-workspace {
+      background: #f5f0fa;
+      border-radius: 16px;
+    }
+
+    .mouth-workspace .drop-zone {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      min-width: 86px;
+      min-height: 28px;
+      padding: 4px 6px;
+      font-size: 0.68rem;
+    }
+
+    #mouthActivity .image-area {
+      background: #ebe4f7;
+    }
+
+    #mouthActivity .drop-zone::before {
+      content: "Suelta aquí";
+      font-size: 0.62rem;
+      color: #a8b8d4;
+      font-weight: 500;
+    }
+
+    #mouthActivity .drop-zone.correct::before {
+      content: "";
+    }
+
+    #mouthActivity .drop-zone.correct {
+      border-style: solid;
+      font-size: 0.72rem;
+    }
+
+    #mouthActivity [data-zone="palate"] { left: 50%; top: 5.2%; }
+    #mouthActivity [data-zone="incisors"] { left: 8.7%; top: 35%; }
+    #mouthActivity [data-zone="canines"] { left: 91.3%; top: 35%; }
+    #mouthActivity [data-zone="molars"] { left: 91.3%; top: 63.6%; }
+    #mouthActivity [data-zone="tongue"] { left: 50%; top: 94.8%; }
+
+    @media (max-width: 900px) {
+      .activity-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .image-area {
+        min-height: 480px;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .face-workspace .drop-zone {
+        min-width: 76px;
+        font-size: 0.62rem;
+      }
+
+      #faceActivity .drop-zone::before {
+        font-size: 0.58rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Parts of the Face and Mouth</h1>
+    <p>Arrastra cada palabra a la casilla que apunta al rasgo correcto.</p>
+  </header>
+
+  <main class="container">
+    <section class="activity" id="faceActivity">
+      <h2>Parts of the Face</h2>
+      <div class="activity-layout">
+        <div class="image-area">
+          <div class="face-workspace">
+          <svg class="face-svg" viewBox="0 0 600 540" aria-label="Face illustration">
+            <defs>
+              <marker id="arrowFace" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                <path d="M0,0 L8,4 L0,8 Z" fill="#e65100" />
+              </marker>
+              <clipPath id="faceClip">
+                <ellipse cx="250" cy="272" rx="122" ry="158" />
+              </clipPath>
+              <clipPath id="bangsClip">
+                <path d="M138 125 Q250 108 362 125 L360 188 Q250 198 140 188 Z" />
+              </clipPath>
+              <linearGradient id="hairGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ffe97a" />
+                <stop offset="100%" stop-color="#e8c030" />
+              </linearGradient>
+            </defs>
+
+            <g transform="translate(50, 12)">
+            <!-- Cabello simple (sin rayas) -->
+            <g id="hair">
+              <path d="M95 115 C100 55, 400 55, 405 115 L408 228 Q400 260 375 265 L125 265 Q100 260 92 228 Z" fill="url(#hairGrad)" stroke="#d4a800" stroke-width="2.5" />
+              <path d="M155 75 Q250 58 345 75" stroke="#fff5b8" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.5" />
+              <!-- Solo unos mechones suaves -->
+              <g stroke="#d4a800" stroke-width="2.5" stroke-linecap="round" opacity="0.35">
+                <path d="M140 90 Q142 150 138 200" />
+                <path d="M200 82 Q202 155 198 210" />
+                <path d="M250 80 Q252 160 248 215" />
+                <path d="M300 82 Q302 155 298 210" />
+                <path d="M360 90 Q358 150 362 200" />
+              </g>
+            </g>
+
+            <!-- Orejas -->
+            <ellipse cx="108" cy="272" rx="24" ry="40" fill="#e8c9a8" stroke="#b8885c" stroke-width="3.5" />
+            <ellipse cx="392" cy="272" rx="24" ry="40" fill="#e8c9a8" stroke="#b8885c" stroke-width="3.5" />
+            <path d="M108 258 Q108 278 108 298" stroke="#c9a07a" stroke-width="2" fill="none" opacity="0.6" />
+            <path d="M392 258 Q392 278 392 298" stroke="#c9a07a" stroke-width="2" fill="none" opacity="0.6" />
+
+            <!-- Cara -->
+            <ellipse cx="250" cy="272" rx="122" ry="158" fill="#edd5b8" stroke="#c9a07a" stroke-width="4" />
+            <ellipse cx="250" cy="278" rx="118" ry="152" fill="#e8c9a8" opacity="0.5" />
+
+            <!-- Flequillo ligero -->
+            <g clip-path="url(#bangsClip)" stroke="#d4a800" stroke-width="3" stroke-linecap="round" opacity="0.4">
+              <path d="M185 128 Q187 168 182 185" />
+              <path d="M220 122 Q222 172 218 190" />
+              <path d="M250 120 Q252 175 248 192" />
+              <path d="M280 122 Q282 172 278 190" />
+              <path d="M315 128 Q317 168 312 185" />
+            </g>
+
+            <!-- Cejas -->
+            <path d="M172 192 Q205 178 238 192" stroke="#2a1a0a" stroke-width="5.5" fill="none" stroke-linecap="round" />
+            <path d="M262 192 Q295 178 328 192" stroke="#2a1a0a" stroke-width="5.5" fill="none" stroke-linecap="round" />
+
+            <!-- Ojos -->
+            <ellipse cx="200" cy="228" rx="36" ry="26" fill="#fff" stroke="#222" stroke-width="3" />
+            <ellipse cx="300" cy="228" rx="36" ry="26" fill="#fff" stroke="#222" stroke-width="3" />
+            <ellipse cx="200" cy="230" rx="22" ry="20" fill="#3d8fd4" stroke="#2568a8" stroke-width="2" />
+            <ellipse cx="300" cy="230" rx="22" ry="20" fill="#3d8fd4" stroke="#2568a8" stroke-width="2" />
+            <circle cx="200" cy="232" r="9" fill="#111" />
+            <circle cx="300" cy="232" r="9" fill="#111" />
+            <circle cx="196" cy="226" r="4" fill="#fff" opacity="0.9" />
+            <circle cx="296" cy="226" r="4" fill="#fff" opacity="0.9" />
+
+            <!-- Pestañas -->
+            <path d="M162 212 Q200 192 238 212" stroke="#111" stroke-width="9" fill="none" stroke-linecap="round" />
+            <path d="M262 212 Q300 192 338 212" stroke="#111" stroke-width="9" fill="none" stroke-linecap="round" />
+            <path d="M168 218 L158 202 M185 214 L178 198 M212 218 L218 200" stroke="#111" stroke-width="4" stroke-linecap="round" />
+            <path d="M288 218 L282 200 M315 214 L322 198 M332 218 L342 202" stroke="#111" stroke-width="4" stroke-linecap="round" />
+
+            <!-- Nariz (más visible) -->
+            <ellipse cx="250" cy="288" rx="14" ry="10" fill="#d4a574" opacity="0.4" />
+            <path d="M234 272 Q250 305 266 272" fill="#ddb896" stroke="#a67c52" stroke-width="3" />
+            <path d="M246 278 L250 298 L254 278" fill="none" stroke="#c9a07a" stroke-width="2" opacity="0.5" />
+
+            <!-- Mejillas -->
+            <ellipse cx="168" cy="308" rx="36" ry="28" fill="#f08a98" opacity="0.75" />
+            <ellipse cx="332" cy="308" rx="36" ry="28" fill="#f08a98" opacity="0.75" />
+            <g fill="#6d4028">
+              <circle cx="155" cy="300" r="4" />
+              <circle cx="168" cy="312" r="4" />
+              <circle cx="180" cy="302" r="3.5" />
+              <circle cx="162" cy="318" r="3" />
+              <circle cx="320" cy="300" r="4" />
+              <circle cx="332" cy="312" r="4" />
+              <circle cx="344" cy="302" r="3.5" />
+              <circle cx="328" cy="318" r="3" />
+            </g>
+
+            <!-- Boca y labios -->
+            <path d="M222 352 Q250 348 278 352" stroke="#c45c6e" stroke-width="2" fill="none" />
+            <path d="M220 358 Q250 378 280 358" fill="#e07088" stroke="#b83d55" stroke-width="3" />
+            <path d="M224 358 Q250 368 276 358" fill="#f5a0b0" stroke="none" />
+            <line x1="250" y1="358" x2="250" y2="368" stroke="#fff" stroke-width="2" opacity="0.5" />
+            </g>
+
+            <!-- Flechas: casilla → rasgo (mismas coords que los drop) -->
+            <g class="part-arrows">
+              <line x1="300" y1="28" x2="300" y2="90" marker-end="url(#arrowFace)" />
+              <line x1="52" y1="178" x2="218" y2="224" marker-end="url(#arrowFace)" />
+              <line x1="548" y1="118" x2="378" y2="204" marker-end="url(#arrowFace)" />
+              <line x1="548" y1="214" x2="382" y2="240" marker-end="url(#arrowFace)" />
+              <line x1="52" y1="248" x2="138" y2="284" marker-end="url(#arrowFace)" />
+              <line x1="548" y1="275" x2="300" y2="300" marker-end="url(#arrowFace)" />
+              <line x1="548" y1="322" x2="388" y2="320" marker-end="url(#arrowFace)" />
+              <line x1="52" y1="356" x2="272" y2="370" marker-end="url(#arrowFace)" />
+              <line x1="52" y1="410" x2="300" y2="374" marker-end="url(#arrowFace)" />
+              <line x1="300" y1="512" x2="300" y2="444" marker-end="url(#arrowFace)" />
+            </g>
+          </svg>
+
+          <div class="drop-zone" data-zone="hair"></div>
+          <div class="drop-zone" data-zone="eyelashes"></div>
+          <div class="drop-zone" data-zone="ears"></div>
+          <div class="drop-zone" data-zone="mouth"></div>
+          <div class="drop-zone" data-zone="lips"></div>
+          <div class="drop-zone" data-zone="eyebrows"></div>
+          <div class="drop-zone" data-zone="eyes"></div>
+          <div class="drop-zone" data-zone="nose"></div>
+          <div class="drop-zone" data-zone="cheeks"></div>
+          <div class="drop-zone" data-zone="chin"></div>
+          </div>
+        </div>
+
+        <aside class="word-bank">
+          <h3>Word Bank</h3>
+          <div class="words">
+            <div class="word" draggable="true" data-answer="hair">hair</div>
+            <div class="word" draggable="true" data-answer="eyelashes">eyelashes</div>
+            <div class="word" draggable="true" data-answer="eyebrows">eyebrows</div>
+            <div class="word" draggable="true" data-answer="eyes">eyes</div>
+            <div class="word" draggable="true" data-answer="cheeks">cheeks</div>
+            <div class="word" draggable="true" data-answer="nose">nose</div>
+            <div class="word" draggable="true" data-answer="chin">chin</div>
+            <div class="word" draggable="true" data-answer="mouth">mouth</div>
+            <div class="word" draggable="true" data-answer="lips">lips</div>
+            <div class="word" draggable="true" data-answer="ears">ears</div>
+          </div>
+          <div class="controls">
+            <button onclick="checkScore('faceActivity')">Check Face</button>
+            <button onclick="resetActivity('faceActivity')">Reset</button>
+          </div>
+          <p class="score"></p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="activity" id="mouthActivity">
+      <h2>Parts of the Mouth</h2>
+      <div class="activity-layout">
+        <div class="image-area">
+          <div class="mouth-workspace">
+            <div class="mouth-stage">
+              <div class="mouth-css" aria-label="Mouth illustration">
+                <div class="palate-part"></div>
+                <div class="gum-top"></div>
+                <div class="teeth-row top-teeth">
+                  <div class="tooth molar"></div>
+                  <div class="tooth canine"></div>
+                  <div class="tooth incisor"></div>
+                  <div class="tooth incisor big"></div>
+                  <div class="tooth incisor big"></div>
+                  <div class="tooth incisor"></div>
+                  <div class="tooth canine"></div>
+                  <div class="tooth molar"></div>
+                </div>
+                <div class="tongue-part"></div>
+                <div class="teeth-row bottom-teeth">
+                  <div class="tooth molar"></div>
+                  <div class="tooth canine"></div>
+                  <div class="tooth incisor"></div>
+                  <div class="tooth incisor big"></div>
+                  <div class="tooth incisor big"></div>
+                  <div class="tooth incisor"></div>
+                  <div class="tooth canine"></div>
+                  <div class="tooth molar"></div>
+                </div>
+                <div class="gum-bottom"></div>
+              </div>
+            </div>
+
+            <svg class="mouth-arrows-overlay" viewBox="0 0 600 540" aria-hidden="true">
+              <defs>
+                <marker id="arrowMouth" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                  <path d="M0,0 L8,4 L0,8 Z" fill="#e65100" />
+                </marker>
+              </defs>
+              <g class="part-arrows">
+                <line x1="300" y1="28" x2="300" y2="95" marker-end="url(#arrowMouth)" />
+                <line x1="52" y1="190" x2="285" y2="195" marker-end="url(#arrowMouth)" />
+                <line x1="548" y1="190" x2="455" y2="195" marker-end="url(#arrowMouth)" />
+                <line x1="548" y1="344" x2="478" y2="358" marker-end="url(#arrowMouth)" />
+                <line x1="300" y1="512" x2="300" y2="285" marker-end="url(#arrowMouth)" />
+              </g>
+            </svg>
+
+          <div class="drop-zone" data-zone="palate"></div>
+          <div class="drop-zone" data-zone="incisors"></div>
+          <div class="drop-zone" data-zone="canines"></div>
+          <div class="drop-zone" data-zone="molars"></div>
+          <div class="drop-zone" data-zone="tongue"></div>
+          </div>
+        </div>
+
+        <aside class="word-bank">
+          <h3>Word Bank</h3>
+          <div class="words">
+            <div class="word" draggable="true" data-answer="palate">palate</div>
+            <div class="word" draggable="true" data-answer="canines">canines</div>
+            <div class="word" draggable="true" data-answer="molars">molars</div>
+            <div class="word" draggable="true" data-answer="tongue">tongue</div>
+            <div class="word" draggable="true" data-answer="incisors">incisors</div>
+          </div>
+          <div class="controls">
+            <button onclick="checkScore('mouthActivity')">Check Mouth</button>
+            <button onclick="resetActivity('mouthActivity')">Reset</button>
+          </div>
+          <p class="score"></p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const words = document.querySelectorAll('.word');
+    const zones = document.querySelectorAll('.drop-zone');
+
+    words.forEach(word => {
+      word.addEventListener('dragstart', event => {
+        event.dataTransfer.setData('text/plain', event.target.dataset.answer);
+      });
+    });
+
+    zones.forEach(zone => {
+      zone.addEventListener('dragover', event => {
+        event.preventDefault();
+      });
+
+      zone.addEventListener('drop', event => {
+        event.preventDefault();
+        const answer = event.dataTransfer.getData('text/plain');
+        const draggedWord = document.querySelector(`.word[data-answer="${answer}"]`);
+
+        if (zone.classList.contains('correct')) return;
+
+        if (answer === zone.dataset.zone) {
+          zone.textContent = draggedWord.textContent;
+          zone.classList.add('correct');
+          zone.classList.remove('wrong');
+          draggedWord.classList.add('used');
+        } else {
+          zone.classList.add('wrong');
+          setTimeout(() => zone.classList.remove('wrong'), 650);
+        }
+      });
+    });
+
+    function checkScore(activityId) {
+      const activity = document.getElementById(activityId);
+      const total = activity.querySelectorAll('.drop-zone').length;
+      const correct = activity.querySelectorAll('.drop-zone.correct').length;
+      const score = activity.querySelector('.score');
+
+      if (correct === total) {
+        score.textContent = `Excellent! You got ${correct}/${total} correct.`;
+      } else {
+        score.textContent = `You have ${correct}/${total} correct. Keep trying!`;
+      }
+    }
+
+    function resetActivity(activityId) {
+      const activity = document.getElementById(activityId);
+      activity.querySelectorAll('.drop-zone').forEach(zone => {
+        zone.textContent = '';
+        zone.classList.remove('correct', 'wrong');
+      });
+      activity.querySelectorAll('.word').forEach(word => {
+        word.classList.remove('used');
+      });
+      activity.querySelector('.score').textContent = '';
+    }
+  </script>
+</body>
+</html>
