@@ -103,7 +103,7 @@
       flex-shrink: 0;
     }
 
-    /* Cara: un solo tablero — casillas y flechas comparten coordenadas */
+    /* Face: single board — drop zones and arrows share coordinates */
     .face-workspace {
       position: relative;
       width: min(100%, 540px);
@@ -129,7 +129,7 @@
       font-size: 0.68rem;
     }
 
-    /* Posición casilla = inicio flecha (viewBox 600×540) */
+    /* Drop zone position = arrow start (viewBox 600×540) */
     #faceActivity [data-zone="hair"] { left: 50%; top: 5.2%; }
     #faceActivity [data-zone="eyelashes"] { left: 8.7%; top: 33%; }
     #faceActivity [data-zone="ears"] { left: 8.7%; top: 46%; }
@@ -141,7 +141,7 @@
     #faceActivity [data-zone="cheeks"] { left: 91.3%; top: 59.6%; }
     #faceActivity [data-zone="chin"] { left: 50%; top: 94.8%; }
 
-    /* Boca: tablero simple */
+    /* Mouth: simple board */
     .diagram-board {
       position: relative;
       width: min(100%, 460px);
@@ -268,7 +268,7 @@
     }
 
     #faceActivity .drop-zone::before {
-      content: "Suelta aquí";
+      content: "Drop here";
       font-size: 0.62rem;
       color: #a8b8d4;
       font-weight: 500;
@@ -316,7 +316,7 @@
       pointer-events: none;
     }
 
-    /* Paladar (detrás; asoma un poco por encima de la encía) */
+    /* Palate (behind; shows slightly above the gum) */
     .palate-part {
       width: 72%;
       height: 72px;
@@ -329,7 +329,7 @@
       z-index: 2;
     }
 
-    /* Encía superior (delante del paladar) */
+    /* Upper gum (in front of the palate) */
     .mouth-css .gum-top {
       width: 84%;
       height: 90px;
@@ -415,7 +415,7 @@
       left: 5px;
     }
 
-    /* Molares: último diente de cada lado, más grueso */
+    /* Molars: last tooth on each side, thicker */
     .mouth-css .tooth.molar {
       width: 52px;
       height: 70px;
@@ -431,7 +431,7 @@
       margin-left: 4px;
     }
 
-    /* Caninos: más estrechos */
+    /* Canines: narrower */
     .mouth-css .tooth.canine {
       width: 40px;
       height: 72px;
@@ -439,7 +439,7 @@
       border-radius: 45% 45% 16px 16px;
     }
 
-    /* Incisivos: grandes al centro */
+    /* Incisors: large in the center */
     .mouth-css .tooth.incisor {
       width: 48px;
       height: 80px;
@@ -463,7 +463,7 @@
     .mouth-css .bottom-teeth .tooth.incisor { margin-top: 0; }
     .mouth-css .bottom-teeth .tooth.incisor.big { margin-top: 6px; }
 
-    /* Lengua (reemplaza el hueco oscuro del ejemplo) */
+    /* Tongue (replaces the dark gap in the reference) */
     .tongue-part {
       position: absolute;
       width: 62%;
@@ -509,7 +509,7 @@
     }
 
     #mouthActivity .drop-zone::before {
-      content: "Suelta aquí";
+      content: "Drop here";
       font-size: 0.62rem;
       color: #a8b8d4;
       font-weight: 500;
@@ -559,7 +559,7 @@
 <body>
   <header>
     <h1>Parts of the Face and Mouth</h1>
-    <p>Arrastra cada palabra a la casilla que apunta al rasgo correcto.</p>
+    <p>Drag each word to the box that points to the correct feature.</p>
   </header>
 
   <main class="container">
@@ -586,11 +586,11 @@
             </defs>
 
             <g transform="translate(50, 12)">
-            <!-- Cabello simple (sin rayas) -->
+            <!-- Simple hair (no stripes) -->
             <g id="hair">
               <path d="M95 115 C100 55, 400 55, 405 115 L408 228 Q400 260 375 265 L125 265 Q100 260 92 228 Z" fill="url(#hairGrad)" stroke="#d4a800" stroke-width="2.5" />
               <path d="M155 75 Q250 58 345 75" stroke="#fff5b8" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.5" />
-              <!-- Solo unos mechones suaves -->
+              <!-- Just a few soft strands -->
               <g stroke="#d4a800" stroke-width="2.5" stroke-linecap="round" opacity="0.35">
                 <path d="M140 90 Q142 150 138 200" />
                 <path d="M200 82 Q202 155 198 210" />
@@ -600,17 +600,17 @@
               </g>
             </g>
 
-            <!-- Orejas -->
+            <!-- Ears -->
             <ellipse cx="108" cy="272" rx="24" ry="40" fill="#e8c9a8" stroke="#b8885c" stroke-width="3.5" />
             <ellipse cx="392" cy="272" rx="24" ry="40" fill="#e8c9a8" stroke="#b8885c" stroke-width="3.5" />
             <path d="M108 258 Q108 278 108 298" stroke="#c9a07a" stroke-width="2" fill="none" opacity="0.6" />
             <path d="M392 258 Q392 278 392 298" stroke="#c9a07a" stroke-width="2" fill="none" opacity="0.6" />
 
-            <!-- Cara -->
+            <!-- Face -->
             <ellipse cx="250" cy="272" rx="122" ry="158" fill="#edd5b8" stroke="#c9a07a" stroke-width="4" />
             <ellipse cx="250" cy="278" rx="118" ry="152" fill="#e8c9a8" opacity="0.5" />
 
-            <!-- Flequillo ligero -->
+            <!-- Light bangs -->
             <g clip-path="url(#bangsClip)" stroke="#d4a800" stroke-width="3" stroke-linecap="round" opacity="0.4">
               <path d="M185 128 Q187 168 182 185" />
               <path d="M220 122 Q222 172 218 190" />
@@ -619,11 +619,11 @@
               <path d="M315 128 Q317 168 312 185" />
             </g>
 
-            <!-- Cejas -->
+            <!-- Eyebrows -->
             <path d="M172 192 Q205 178 238 192" stroke="#2a1a0a" stroke-width="5.5" fill="none" stroke-linecap="round" />
             <path d="M262 192 Q295 178 328 192" stroke="#2a1a0a" stroke-width="5.5" fill="none" stroke-linecap="round" />
 
-            <!-- Ojos -->
+            <!-- Eyes -->
             <ellipse cx="200" cy="228" rx="36" ry="26" fill="#fff" stroke="#222" stroke-width="3" />
             <ellipse cx="300" cy="228" rx="36" ry="26" fill="#fff" stroke="#222" stroke-width="3" />
             <ellipse cx="200" cy="230" rx="22" ry="20" fill="#3d8fd4" stroke="#2568a8" stroke-width="2" />
@@ -633,18 +633,18 @@
             <circle cx="196" cy="226" r="4" fill="#fff" opacity="0.9" />
             <circle cx="296" cy="226" r="4" fill="#fff" opacity="0.9" />
 
-            <!-- Pestañas -->
+            <!-- Eyelashes -->
             <path d="M162 212 Q200 192 238 212" stroke="#111" stroke-width="9" fill="none" stroke-linecap="round" />
             <path d="M262 212 Q300 192 338 212" stroke="#111" stroke-width="9" fill="none" stroke-linecap="round" />
             <path d="M168 218 L158 202 M185 214 L178 198 M212 218 L218 200" stroke="#111" stroke-width="4" stroke-linecap="round" />
             <path d="M288 218 L282 200 M315 214 L322 198 M332 218 L342 202" stroke="#111" stroke-width="4" stroke-linecap="round" />
 
-            <!-- Nariz (más visible) -->
+            <!-- Nose (more visible) -->
             <ellipse cx="250" cy="288" rx="14" ry="10" fill="#d4a574" opacity="0.4" />
             <path d="M234 272 Q250 305 266 272" fill="#ddb896" stroke="#a67c52" stroke-width="3" />
             <path d="M246 278 L250 298 L254 278" fill="none" stroke="#c9a07a" stroke-width="2" opacity="0.5" />
 
-            <!-- Mejillas -->
+            <!-- Cheeks -->
             <ellipse cx="168" cy="308" rx="36" ry="28" fill="#f08a98" opacity="0.75" />
             <ellipse cx="332" cy="308" rx="36" ry="28" fill="#f08a98" opacity="0.75" />
             <g fill="#6d4028">
@@ -658,14 +658,14 @@
               <circle cx="328" cy="318" r="3" />
             </g>
 
-            <!-- Boca y labios -->
+            <!-- Mouth and lips -->
             <path d="M222 352 Q250 348 278 352" stroke="#c45c6e" stroke-width="2" fill="none" />
             <path d="M220 358 Q250 378 280 358" fill="#e07088" stroke="#b83d55" stroke-width="3" />
             <path d="M224 358 Q250 368 276 358" fill="#f5a0b0" stroke="none" />
             <line x1="250" y1="358" x2="250" y2="368" stroke="#fff" stroke-width="2" opacity="0.5" />
             </g>
 
-            <!-- Flechas: casilla → rasgo (mismas coords que los drop) -->
+            <!-- Arrows: drop zone → feature (same coords as drop zones) -->
             <g class="part-arrows">
               <line x1="300" y1="28" x2="300" y2="90" marker-end="url(#arrowFace)" />
               <line x1="52" y1="178" x2="218" y2="224" marker-end="url(#arrowFace)" />
